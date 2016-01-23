@@ -17,3 +17,7 @@ hs_err_pid*
 
 # Build artifacts, test reports, etc.
 build/
+
+# Eclipse files
+.settings/
+.classpath
