@@ -15,7 +15,7 @@ import br.ufrj.dcc.convexhull.model.Point;
 public class InputReaderUnitTest
 {
 	@Test
-	public void testReadFromFile_SingleTestCase() throws FileNotFoundException
+	public void readFromFile_SingleTestCase() throws FileNotFoundException
 	{
 		URL url = InputReaderUnitTest.class.getResource("dataset/singleTestCase");
 		File input = new File(url.getFile());
