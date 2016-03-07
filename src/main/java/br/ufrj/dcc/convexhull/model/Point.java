@@ -17,6 +17,24 @@ public class Point
 		this.y = y;
 	}
 	
+	/**
+	 * Check if a point is on the left or on the right of a given line segment.
+	 * 
+	 * @param line a given line segment
+	 * @param point a given point P
+	 * @return <b>true</b> if the point is on the left or <b>false</b> if the point is on the right
+	 * @see https://www.cs.cmu.edu/~quake/robust.html
+	 */
+	public boolean isPointOnTheLeftOfLineSegment(LineSegment line)
+	{
+		if(((line.a().x() - x) * (line.b().y() - y)) - ((line.a().y() - y) * (line.b().x() - x)) > 0)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public Double x()
 	{
 		return x;

@@ -18,13 +18,15 @@ public class ConvexHull
 	 * Complexity: O(n3)
 	 * 
 	 * @param points a given set of points P
-	 * @return the convex hull i.e a set of points 
+	 * @return the convex hull i.e a set of points
+	 * @see http://www.cs.jhu.edu/~misha/Fall05/09.13.05.pdf 
 	 */
 	public static Set<Point> bruteForce(Set<Point> points)
 	{
-		Set<LineSegment> lines = getAllPossibleLines(points);
+		Set<LineSegment> lines = getAllPossibleLineSegment(points);
+		Set<Point> pointsOnConvexHull = checkIfEachLineSegmentMakesAnEdgeOfConvexHull(points, lines);
 		
-		return null;
+		return pointsOnConvexHull;
 	}
 	
 	public static Set<Point> divideAndConquer(Set<Point> points)
@@ -32,9 +34,29 @@ public class ConvexHull
 		return null;
 	}
 
-	public boolean isConvexHullEdge(LineSegment line, Set<Point> points)
+	/**
+	 * Given a set of points P and a set of line segments,
+	 * iterate over all line segments to check if it makes an edge of
+	 * the convex hull.
+	 * 
+	 * @param points a given set of points P
+	 * @param lines a set of line segments
+	 * @return a set of points that makes an edge of the convex hull
+	 */
+	private static Set<Point> checkIfEachLineSegmentMakesAnEdgeOfConvexHull(Set<Point> points, Set<LineSegment> lines)
 	{
-		return false;
+		Set<Point> pointsOnConvexHull = new HashSet<Point>();
+		
+		for (LineSegment line : lines)
+		{
+			if(isConvexHullEdge(line, points))
+			{
+				pointsOnConvexHull.add(line.a());
+				pointsOnConvexHull.add(line.b());
+			}
+		}
+		
+		return pointsOnConvexHull;
 	}
 	
 	/**
@@ -44,7 +66,7 @@ public class ConvexHull
 	 * @param points a given set of points P
 	 * @return a set of line segments
 	 */
-	protected static Set<LineSegment> getAllPossibleLines(Set<Point> points)
+	protected static Set<LineSegment> getAllPossibleLineSegment(Set<Point> points)
 	{
 		Set<LineSegment> lines = new HashSet<LineSegment>();
 		
@@ -63,5 +85,39 @@ public class ConvexHull
 		}
 		
 		return lines;
+	}
+	
+	/**
+	 * Given a line segment and a set of points, check if every point is on the same side of the line segment.
+	 * @param line a given line
+	 * @param points a given set of points
+	 * @return <b>true</b> if every point is on the same side <b>false</b> if not
+	 */
+	private static boolean isConvexHullEdge(LineSegment line, Set<Point> points)
+	{
+		Boolean lastOrientation = null;
+		Boolean orientation = null;
+		
+		for (Point point : points)
+		{
+			if(line.isPointOnLineSegment(point))
+			{
+				continue;
+			}
+			
+			if(lastOrientation == null)
+			{
+				lastOrientation = point.isPointOnTheLeftOfLineSegment(line);
+			}
+			
+			orientation = point.isPointOnTheLeftOfLineSegment(line);
+			
+			if(!lastOrientation.equals(orientation))
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

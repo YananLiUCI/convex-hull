@@ -24,7 +24,7 @@ public class ConvexHullUnitTest
 		Set<Point> points = new HashSet<Point>();
 		points.addAll(asList(a, b, c, d, e, f, g));
 		
-		Set<LineSegment> result = ConvexHull.getAllPossibleLines(points);
+		Set<LineSegment> result = ConvexHull.getAllPossibleLineSegment(points);
 		
 		assertEquals(21, result.size());
 	}

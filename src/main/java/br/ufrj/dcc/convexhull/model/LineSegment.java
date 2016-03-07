@@ -17,6 +17,11 @@ public class LineSegment
 		this.b = b;
 	}
 	
+	public boolean isPointOnLineSegment(Point point)
+	{
+		return a.equals(point) || b.equals(point);
+	}
+	
 	public Point a()
 	{
 		return a;

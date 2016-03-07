@@ -77,4 +77,18 @@ public class LineSegmentUnitTest
 		
 		assertTrue(lines.contains(d));
 	}
+	
+	@Test
+	public void isPointOnLineSegment() throws Exception
+	{
+		Point a = new Point(1.0, 1.0);
+		Point b = new Point(2.0, 2.0);
+		Point c = new Point(3.0, 3.0);
+		
+		LineSegment d = new LineSegment(a, b);
+
+		assertTrue(d.isPointOnLineSegment(a));
+		assertTrue(d.isPointOnLineSegment(b));
+		assertFalse(d.isPointOnLineSegment(c));
+	}
 }
