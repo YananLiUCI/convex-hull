@@ -27,7 +27,7 @@ public class Point
 	 */
 	public boolean isPointOnTheLeftOfLineSegment(LineSegment line)
 	{
-		if(((line.a().x() - x) * (line.b().y() - y)) - ((line.a().y() - y) * (line.b().x() - x)) > 0)
+		if(((line.a().x() - x) * (line.b().y() - y)) - ((line.a().y() - y) * (line.b().x() - x)) > 0.0)
 		{
 			return true;
 		}
