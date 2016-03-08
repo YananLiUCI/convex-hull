@@ -1,6 +1,7 @@
 package br.ufrj.dcc.convexhull.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -11,6 +12,9 @@ import java.util.Set;
  */
 public class ConvexHull
 {
+	protected static final boolean IS_FIRST_HALF = true;
+	protected static final boolean NOT_IS_FIRST_HALF = false;
+
 	/**
 	 * Basic idea: Given a set of points P, test each line segment 
 	 * to see if it makes up an edge of the convex hull.
@@ -29,11 +33,65 @@ public class ConvexHull
 		return pointsOnConvexHull;
 	}
 	
+	/**
+	 * Basic idea: Finding the convex hull of small sets is easier than finding
+	 * the hull of large ones.
+	 * 
+	 * Complexity: O(nlogn)
+	 * 
+	 * @param points a given set of points P
+	 * @return
+	 */
 	public static Set<Point> divideAndConquer(Set<Point> points)
 	{
-		return null;
+		Set<Point> firstSmallSet = splitSet(points, IS_FIRST_HALF);
+		Set<Point> secondSmallSet = splitSet(points, NOT_IS_FIRST_HALF);
+		
+		Set<Point> firstSetPointsOnConvexHull = bruteForce(firstSmallSet);
+		Set<Point> secondSetPointsOnConvexHull = bruteForce(secondSmallSet);
+		
+		Set<Point> pointsOnConvexHull = mergeHulls(firstSetPointsOnConvexHull, secondSetPointsOnConvexHull);
+		
+		return pointsOnConvexHull;
 	}
 
+	/**
+	 * Given a original set, split it by two, returning the first or second half.
+	 * 
+	 * @param points a given set of points
+	 * @param isFirstHalf a flag to check if it should return the first half of the subset
+	 * @return
+	 */
+	protected static Set<Point> splitSet(Set<Point> points, boolean isFirstHalf)
+	{
+		if(isFirstHalf)
+		{
+			int setSize = points.size() / 2;
+			
+			Set<Point> firstHalf = new HashSet<Point>();
+			Iterator<Point> iterator = points.iterator();
+	
+			for (int i = 0; i < setSize; i++)
+			{
+				Point nextPoint = iterator.next();
+				
+				firstHalf.add(nextPoint);
+			}
+
+			points.removeAll(firstHalf);
+			
+			return firstHalf;
+		}
+		
+		return points;
+	}
+	
+	private static Set<Point> mergeHulls(Set<Point> firstSetPointsOnConvexHull, Set<Point> secondSetPointsOnConvexHull)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
 	 * Given a set of points P and a set of line segments,
 	 * iterate over all line segments to check if it makes an edge of
@@ -116,6 +174,8 @@ public class ConvexHull
 			{
 				return false;
 			}
+			
+			lastOrientation = orientation;
 		}
 		
 		return true;

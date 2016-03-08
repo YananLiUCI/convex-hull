@@ -18,7 +18,7 @@ public class Main
 {
 	public static void main(String[] args) throws FileNotFoundException
 	{
-		File input = new File("/home/jonatascb/projetos/ConvexHull/input/input2.txt");
+		File input = new File("/home/jonatascb/projetos/ConvexHull/input/input.txt");
 		
 		Set<Point> inputPoints = InputReader.readFromFile(input);
 		Set<Point> convexPoints = ConvexHull.bruteForce(inputPoints);
