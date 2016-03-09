@@ -2,7 +2,9 @@ package br.ufrj.dcc.convexhull.action;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import br.ufrj.dcc.convexhull.model.ConvexHull;
 import br.ufrj.dcc.convexhull.model.Point;
@@ -18,10 +20,10 @@ public class Main
 {
 	public static void main(String[] args) throws FileNotFoundException
 	{
-		File input = new File("/home/jonatascb/projetos/ConvexHull/input/input.txt");
+		File input = new File("/home/jonatascb/projetos/ConvexHull/input/input2.txt");
 		
 		List<Point> inputPoints = InputReader.readFromFile(input);
-		List<Point> convexPoints = ConvexHull.bruteForce(inputPoints);
+		Set<Point> convexPoints = new HashSet<Point>(ConvexHull.bruteForce(inputPoints));
 		
 		System.out.println(convexPoints);
 	}

@@ -35,6 +35,16 @@ public class Point implements Comparable<Point>
 		return false;
 	}
 	
+	public boolean isPointAlignedWithLineSegment(LineSegment line)
+	{
+		if(((line.a().x() - x) * (line.b().y() - y)) - ((line.a().y() - y) * (line.b().x() - x)) == 0.0)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public Double x()
 	{
 		return x;

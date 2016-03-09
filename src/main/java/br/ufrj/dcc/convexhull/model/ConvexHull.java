@@ -103,23 +103,99 @@ public class ConvexHull
 	private static List<Point> mergeHulls(List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
 		LineSegment lowerTangent = findLowerTangent(firstConvexHull, secondConvexHull);
-		LineSegment upperTangent = findUpperTangent(lowerTangent);
+		LineSegment upperTangent = findUpperTangent(firstConvexHull, secondConvexHull);
 		
 		List<Point> convexHull = getConvexHull(lowerTangent, upperTangent, firstConvexHull, secondConvexHull);
 		
 		return convexHull;
 	}
 	
+	/**
+	 * Given the two convex hulls, with the first one containing the lowest x coordinates 
+	 * and the second contains the highest coordinates, given also the lower and upper tangent,
+	 * returns a convex hull set of points by discarding the points between those two tangents.
+	 * 
+	 * @param lowerTangent the lower tangent of the two convex hulls
+	 * @param upperTangent the upper tangent of the two convex hulls
+	 * @param firstConvexHull the first convex hull containing the lowest x coordinates points
+	 * @param secondConvexHull the second convex hull containing the highest x coordinates points
+	 * @return the convex hull merged
+	 */
 	private static List<Point> getConvexHull(LineSegment lowerTangent, LineSegment upperTangent, List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<Point> convexHull = new ArrayList<Point>();
+		
+		for (Point point : firstConvexHull)
+		{
+			if(point.x() > upperTangent.a().x() && point.x() > lowerTangent.a().x())
+			{
+				if(point.y() < upperTangent.a().y() && point.y() > lowerTangent.a().y())
+				{
+					continue;
+				}
+			}
+			
+			convexHull.add(point);
+		}
+		
+		for (Point point : secondConvexHull)
+		{
+			if(point.x() < upperTangent.b().x() && point.x() < lowerTangent.b().x())
+			{
+				if(point.y() < upperTangent.b().y() && point.y() > lowerTangent.b().y())
+				{
+					continue;
+				}
+			}
+			
+			convexHull.add(point);
+		}
+		
+		return convexHull;
 	}
 
-	private static LineSegment findUpperTangent(LineSegment lowerTangent)
+	/**
+	 * This method find the upper tangent. This method is symmetric to the lower tangent method.
+	 * 
+	 * @param firstConvexHull the first convex hull containing the leftmost points
+	 * @param secondConvexHull the second convex hull containing the rightmost points
+	 * @return upperTangent the upperTangent between those two convex hulls
+	 */
+	protected static LineSegment findUpperTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		int rightmostPointFirstConvexHullIndex = firstConvexHull.size()-1;
+		int leftmostPointSecondConvexHullIndex = 0;
+		
+		Point rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
+		Point leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+		
+		LineSegment upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+
+		Boolean isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(upperTangent, firstConvexHull, secondConvexHull);
+		
+		while(!isEveryPointOnTheSameLine)
+		{
+			leftmostPointSecondConvexHullIndex++;
+			leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+			
+			upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+			
+			isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(upperTangent, firstConvexHull, secondConvexHull);
+			
+			if(isEveryPointOnTheSameLine)
+			{
+				return upperTangent;
+			}
+			
+			rightmostPointFirstConvexHullIndex--;
+			rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
+			
+			upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+			
+			isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(upperTangent, firstConvexHull, secondConvexHull);
+		}
+		
+		return upperTangent;
 	}
 
 	/**
@@ -129,7 +205,7 @@ public class ConvexHull
 	 * @param secondConvexHull the second convex hull containing the rightmost points
 	 * @return lowerTangent the lowerTangent between those two convex hulls
 	 */
-	private static LineSegment findLowerTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
+	protected static LineSegment findLowerTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
 		int rightmostPointFirstConvexHullIndex = firstConvexHull.size()-1;
 		int leftmostPointSecondConvexHullIndex = 0;
@@ -139,21 +215,28 @@ public class ConvexHull
 		
 		LineSegment lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
 
-		Boolean isEveryPointOnTheSameLineFirstConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull);
-		Boolean isEveryPointOnTheSameLineSecondConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, secondConvexHull);
+		Boolean isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull, secondConvexHull);
 		
-		while(!isEveryPointOnTheSameLineFirstConvexHull && !isEveryPointOnTheSameLineSecondConvexHull)
+		while(!isEveryPointOnTheSameLine)
 		{
 			rightmostPointFirstConvexHullIndex--;
-			leftmostPointSecondConvexHullIndex++;
-			
 			rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
+			
+			lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+
+			isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull, secondConvexHull);
+			
+			if(isEveryPointOnTheSameLine)
+			{
+				return lowerTangent;
+			}
+			
+			leftmostPointSecondConvexHullIndex++;
 			leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
 			
 			lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
 
-			isEveryPointOnTheSameLineFirstConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull);
-			isEveryPointOnTheSameLineSecondConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, secondConvexHull);
+			isEveryPointOnTheSameLine = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull, secondConvexHull);
 		}
 		
 		return lowerTangent;
@@ -226,6 +309,52 @@ public class ConvexHull
 		for (Point point : points)
 		{
 			if(line.isPointOnLineSegment(point))
+			{
+				continue;
+			}
+			
+			if(lastOrientation == null)
+			{
+				lastOrientation = point.isPointOnTheLeftOfLineSegment(line);
+			}
+			
+			orientation = point.isPointOnTheLeftOfLineSegment(line);
+			
+			if(!lastOrientation.equals(orientation))
+			{
+				return false;
+			}
+			
+			lastOrientation = orientation;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Given a line segment and two set of points, check if every point (considering both sets) is on the same side of the line segment.
+	 * 
+	 * @param line a given line segment
+	 * @param firstConvexHull a set of points
+	 * @param secondConvexHull another set of points
+	 * @return true if every point is on the same side or false otherwise
+	 */
+	private static boolean checkIfEveryPointIsOnTheSameSide(LineSegment line, List<Point> firstConvexHull, List<Point> secondConvexHull)
+	{
+		Boolean lastOrientation = null;
+		Boolean orientation = null;
+		
+		List<Point> points = new ArrayList<Point>(firstConvexHull);
+		points.addAll(secondConvexHull);
+		
+		for (Point point : points)
+		{
+			if(line.isPointOnLineSegment(point))
+			{
+				continue;
+			}
+
+			if(point.isPointAlignedWithLineSegment(line))
 			{
 				continue;
 			}
