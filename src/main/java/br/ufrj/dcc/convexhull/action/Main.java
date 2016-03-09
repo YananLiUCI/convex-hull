@@ -2,7 +2,7 @@ package br.ufrj.dcc.convexhull.action;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Set;
+import java.util.List;
 
 import br.ufrj.dcc.convexhull.model.ConvexHull;
 import br.ufrj.dcc.convexhull.model.Point;
@@ -20,8 +20,8 @@ public class Main
 	{
 		File input = new File("/home/jonatascb/projetos/ConvexHull/input/input.txt");
 		
-		Set<Point> inputPoints = InputReader.readFromFile(input);
-		Set<Point> convexPoints = ConvexHull.bruteForce(inputPoints);
+		List<Point> inputPoints = InputReader.readFromFile(input);
+		List<Point> convexPoints = ConvexHull.bruteForce(inputPoints);
 		
 		System.out.println(convexPoints);
 	}

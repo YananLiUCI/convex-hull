@@ -2,9 +2,9 @@ package br.ufrj.dcc.convexhull.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 import br.ufrj.dcc.convexhull.model.Point;
 
@@ -16,12 +16,12 @@ import br.ufrj.dcc.convexhull.model.Point;
  */
 public class InputReader
 {
-	public static Set<Point> readFromFile(File input) throws FileNotFoundException
+	public static List<Point> readFromFile(File input) throws FileNotFoundException
 	{
 		Scanner scanner = new Scanner(input);
 		scanner.next();
 		
-		Set<Point> points = new HashSet<Point>();
+		List<Point> points = new ArrayList<Point>();
 		
 		while(scanner.hasNext())
 		{

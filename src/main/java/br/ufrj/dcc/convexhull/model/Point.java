@@ -6,7 +6,7 @@ package br.ufrj.dcc.convexhull.model;
  * @author jonatascb
  *
  */
-public class Point
+public class Point implements Comparable<Point>
 {
 	private Double x;
 	private Double y;
@@ -63,5 +63,18 @@ public class Point
 	public int hashCode()
 	{
 		return (int) x.intValue() * y.intValue();
+	}
+
+	@Override
+	public int compareTo(Point other)
+	{
+		final int BEFORE = -1;
+	    final int EQUAL = 0;
+	    final int AFTER = 1;
+		
+		if(this.x > other.x) return AFTER;
+		if(this.x < other.x) return BEFORE;
+		
+		return EQUAL;
 	}
 }

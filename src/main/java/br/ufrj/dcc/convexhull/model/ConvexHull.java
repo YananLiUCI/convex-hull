@@ -1,7 +1,9 @@
 package br.ufrj.dcc.convexhull.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,7 +15,7 @@ import java.util.Set;
 public class ConvexHull
 {
 	protected static final boolean IS_FIRST_HALF = true;
-	protected static final boolean NOT_IS_FIRST_HALF = false;
+	protected static final boolean IS_NOT_FIRST_HALF = false;
 
 	/**
 	 * Basic idea: Given a set of points P, test each line segment 
@@ -25,10 +27,10 @@ public class ConvexHull
 	 * @return the convex hull i.e a set of points
 	 * @see http://www.cs.jhu.edu/~misha/Fall05/09.13.05.pdf 
 	 */
-	public static Set<Point> bruteForce(Set<Point> points)
+	public static List<Point> bruteForce(List<Point> points)
 	{
 		Set<LineSegment> lines = getAllPossibleLineSegment(points);
-		Set<Point> pointsOnConvexHull = checkIfEachLineSegmentMakesAnEdgeOfConvexHull(points, lines);
+		List<Point> pointsOnConvexHull = checkIfEachLineSegmentMakesAnEdgeOfConvexHull(points, lines);
 		
 		return pointsOnConvexHull;
 	}
@@ -37,20 +39,25 @@ public class ConvexHull
 	 * Basic idea: Finding the convex hull of small sets is easier than finding
 	 * the hull of large ones.
 	 * 
+	 * The first small set consists of half the points with the lowest x coordinates
+	 * and the second small set consists of half the points with the highest x coordinates.
+	 * 
 	 * Complexity: O(nlogn)
 	 * 
 	 * @param points a given set of points P
 	 * @return
 	 */
-	public static Set<Point> divideAndConquer(Set<Point> points)
+	public static List<Point> divideAndConquer(List<Point> points)
 	{
-		Set<Point> firstSmallSet = splitSet(points, IS_FIRST_HALF);
-		Set<Point> secondSmallSet = splitSet(points, NOT_IS_FIRST_HALF);
+		Collections.sort(points);
 		
-		Set<Point> firstSetPointsOnConvexHull = bruteForce(firstSmallSet);
-		Set<Point> secondSetPointsOnConvexHull = bruteForce(secondSmallSet);
+		List<Point> firstSmallSet = splitSet(points, IS_FIRST_HALF);
+		List<Point> secondSmallSet = splitSet(points, IS_NOT_FIRST_HALF);
 		
-		Set<Point> pointsOnConvexHull = mergeHulls(firstSetPointsOnConvexHull, secondSetPointsOnConvexHull);
+		List<Point> firstSetPointsOnConvexHull = bruteForce(firstSmallSet);
+		List<Point> secondSetPointsOnConvexHull = bruteForce(secondSmallSet);
+		
+		List<Point> pointsOnConvexHull = mergeHulls(firstSetPointsOnConvexHull, secondSetPointsOnConvexHull);
 		
 		return pointsOnConvexHull;
 	}
@@ -62,34 +69,94 @@ public class ConvexHull
 	 * @param isFirstHalf a flag to check if it should return the first half of the subset
 	 * @return
 	 */
-	protected static Set<Point> splitSet(Set<Point> points, boolean isFirstHalf)
+	protected static List<Point> splitSet(List<Point> points, boolean isFirstHalf)
 	{
 		if(isFirstHalf)
 		{
 			int setSize = points.size() / 2;
 			
-			Set<Point> firstHalf = new HashSet<Point>();
-			Iterator<Point> iterator = points.iterator();
-	
+			List<Point> smallSet = new ArrayList<Point>();
+			
 			for (int i = 0; i < setSize; i++)
 			{
-				Point nextPoint = iterator.next();
+				Point nextPoint = points.get(i);
 				
-				firstHalf.add(nextPoint);
+				smallSet.add(nextPoint);
 			}
 
-			points.removeAll(firstHalf);
+			points.removeAll(smallSet);
 			
-			return firstHalf;
+			return smallSet;
 		}
 		
 		return points;
 	}
 	
-	private static Set<Point> mergeHulls(Set<Point> firstSetPointsOnConvexHull, Set<Point> secondSetPointsOnConvexHull)
+	/**
+	 * Merges two convex hulls using the tangent method.
+	 * 
+	 * @param firstConvexHull a convex hull
+	 * @param secondConvexHull another convex hull
+	 * @return mergedHull a set of points merging the two convex hulls 
+	 * @see http://www.cs.wustl.edu/~pless/506/l3.html
+	 */
+	private static List<Point> mergeHulls(List<Point> firstConvexHull, List<Point> secondConvexHull)
+	{
+		LineSegment lowerTangent = findLowerTangent(firstConvexHull, secondConvexHull);
+		LineSegment upperTangent = findUpperTangent(lowerTangent);
+		
+		List<Point> convexHull = getConvexHull(lowerTangent, upperTangent, firstConvexHull, secondConvexHull);
+		
+		return convexHull;
+	}
+	
+	private static List<Point> getConvexHull(LineSegment lowerTangent, LineSegment upperTangent, List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private static LineSegment findUpperTangent(LineSegment lowerTangent)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * This method find the lower tangent using a simple walking procedure.
+	 * 
+	 * @param firstConvexHull the first convex hull containing the leftmost points
+	 * @param secondConvexHull the second convex hull containing the rightmost points
+	 * @return lowerTangent the lowerTangent between those two convex hulls
+	 */
+	private static LineSegment findLowerTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
+	{
+		int rightmostPointFirstConvexHullIndex = firstConvexHull.size()-1;
+		int leftmostPointSecondConvexHullIndex = 0;
+		
+		Point rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
+		Point leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+		
+		LineSegment lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+
+		Boolean isEveryPointOnTheSameLineFirstConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull);
+		Boolean isEveryPointOnTheSameLineSecondConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, secondConvexHull);
+		
+		while(!isEveryPointOnTheSameLineFirstConvexHull && !isEveryPointOnTheSameLineSecondConvexHull)
+		{
+			rightmostPointFirstConvexHullIndex--;
+			leftmostPointSecondConvexHullIndex++;
+			
+			rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
+			leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+			
+			lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
+
+			isEveryPointOnTheSameLineFirstConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, firstConvexHull);
+			isEveryPointOnTheSameLineSecondConvexHull = checkIfEveryPointIsOnTheSameSide(lowerTangent, secondConvexHull);
+		}
+		
+		return lowerTangent;
 	}
 	
 	/**
@@ -101,13 +168,13 @@ public class ConvexHull
 	 * @param lines a set of line segments
 	 * @return a set of points that makes an edge of the convex hull
 	 */
-	private static Set<Point> checkIfEachLineSegmentMakesAnEdgeOfConvexHull(Set<Point> points, Set<LineSegment> lines)
+	private static List<Point> checkIfEachLineSegmentMakesAnEdgeOfConvexHull(List<Point> points, Set<LineSegment> lines)
 	{
-		Set<Point> pointsOnConvexHull = new HashSet<Point>();
+		List<Point> pointsOnConvexHull = new ArrayList<Point>();
 		
 		for (LineSegment line : lines)
 		{
-			if(isConvexHullEdge(line, points))
+			if(checkIfEveryPointIsOnTheSameSide(line, points))
 			{
 				pointsOnConvexHull.add(line.a());
 				pointsOnConvexHull.add(line.b());
@@ -124,7 +191,7 @@ public class ConvexHull
 	 * @param points a given set of points P
 	 * @return a set of line segments
 	 */
-	protected static Set<LineSegment> getAllPossibleLineSegment(Set<Point> points)
+	protected static Set<LineSegment> getAllPossibleLineSegment(List<Point> points)
 	{
 		Set<LineSegment> lines = new HashSet<LineSegment>();
 		
@@ -151,7 +218,7 @@ public class ConvexHull
 	 * @param points a given set of points
 	 * @return <b>true</b> if every point is on the same side <b>false</b> if not
 	 */
-	private static boolean isConvexHullEdge(LineSegment line, Set<Point> points)
+	private static boolean checkIfEveryPointIsOnTheSameSide(LineSegment line, List<Point> points)
 	{
 		Boolean lastOrientation = null;
 		Boolean orientation = null;
