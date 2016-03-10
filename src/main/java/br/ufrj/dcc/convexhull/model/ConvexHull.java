@@ -56,6 +56,9 @@ public class ConvexHull
 		
 		List<Point> firstSetPointsOnConvexHull = bruteForce(firstSmallSet);
 		List<Point> secondSetPointsOnConvexHull = bruteForce(secondSmallSet);
+
+		sortPointsClockwiseOrder(firstSetPointsOnConvexHull);
+		sortPointsClockwiseOrder(secondSetPointsOnConvexHull);
 		
 		List<Point> pointsOnConvexHull = mergeHulls(firstSetPointsOnConvexHull, secondSetPointsOnConvexHull);
 		
@@ -259,8 +262,18 @@ public class ConvexHull
 		{
 			if(checkIfEveryPointIsOnTheSameSide(line, points))
 			{
-				pointsOnConvexHull.add(line.a());
-				pointsOnConvexHull.add(line.b());
+				Point a = line.a();
+				Point b = line.b();
+				
+				if(!pointsOnConvexHull.contains(a))
+				{
+					pointsOnConvexHull.add(a);
+				}
+				
+				if(!pointsOnConvexHull.contains(b))
+				{
+					pointsOnConvexHull.add(b);
+				}
 			}
 		}
 		
@@ -375,5 +388,43 @@ public class ConvexHull
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Sort a given set of points in clockwise order.
+	 * 
+	 * @param points a given set of points
+	 * @see http://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+	 */
+	protected static void sortPointsClockwiseOrder(List<Point> points)
+	{
+		Point centerPoint = getCenterPoint(points);
+		Collections.sort(points, new PointClockwiseComparator(centerPoint));
+	}
+
+	/**
+	 * Computes the center of a given set of points.
+	 * 
+	 * @param points a given set of points
+	 * @return center a point which is the center of this point set.
+	 * @see http://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+	 */
+	protected static Point getCenterPoint(List<Point> points)
+	{
+		double sumOfXCoordinates = 0.0;
+		double sumOfYCoordinates = 0.0;
+		
+		for (Point point : points)
+		{
+			sumOfXCoordinates+= point.x();
+			sumOfYCoordinates+= point.y();
+		}
+		
+		sumOfXCoordinates = sumOfXCoordinates / points.size();
+		sumOfYCoordinates = sumOfYCoordinates / points.size();
+		
+		Point center = new Point(sumOfXCoordinates, sumOfYCoordinates);
+		
+		return center;
 	}
 }

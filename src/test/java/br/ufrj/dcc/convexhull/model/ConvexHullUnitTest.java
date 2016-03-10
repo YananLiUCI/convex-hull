@@ -123,4 +123,36 @@ public class ConvexHullUnitTest
 		assertEquals(c, upperTangent.a());
 		assertEquals(h, upperTangent.b());
 	}
+	
+	@Test
+	public void getCenterPoint() throws Exception
+	{
+		Point a = new Point(0.0, 0.0);
+		Point b = new Point(5.0, 0.0);
+		Point c = new Point(5.0, 5.0);
+		Point d = new Point(0.0, 5.0);
+		List<Point> points = Arrays.asList(a, b, c, d);
+		
+		
+		Point center = ConvexHull.getCenterPoint(points);
+		
+		assertEquals(new Point(2.5, 2.5), center);
+	}
+	
+	@Test
+	public void sortPointsClockwiseOrder() throws Exception
+	{
+		Point a = new Point(0.0, 0.0);
+		Point b = new Point(5.0, 0.0);
+		Point c = new Point(5.0, 5.0);
+		Point d = new Point(0.0, 5.0);
+		List<Point> points = Arrays.asList(a, b, c, d);
+		
+		ConvexHull.sortPointsClockwiseOrder(points);
+		
+		assertEquals(d, points.get(0));
+		assertEquals(c, points.get(1));
+		assertEquals(b, points.get(2));
+		assertEquals(a, points.get(3));
+	}
 }
