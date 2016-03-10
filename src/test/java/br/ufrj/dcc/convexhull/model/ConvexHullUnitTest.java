@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -89,8 +88,8 @@ public class ConvexHullUnitTest
 
 		List<Point> secondConvexHull = Arrays.asList(e, f, g, h);
 		
-		Collections.sort(firstConvexHull);
-		Collections.sort(secondConvexHull);
+		ConvexHull.sortPointsClockwiseOrder(firstConvexHull);
+		ConvexHull.sortPointsCounterClockwiseOrder(secondConvexHull);
 		
 		LineSegment lowerTangent = ConvexHull.findLowerTangent(firstConvexHull, secondConvexHull);
 		
@@ -115,8 +114,8 @@ public class ConvexHullUnitTest
 
 		List<Point> secondConvexHull = Arrays.asList(e, f, g, h);
 		
-		Collections.sort(firstConvexHull);
-		Collections.sort(secondConvexHull);
+		ConvexHull.sortPointsClockwiseOrder(firstConvexHull);
+		ConvexHull.sortPointsCounterClockwiseOrder(secondConvexHull);
 		
 		LineSegment upperTangent = ConvexHull.findUpperTangent(firstConvexHull, secondConvexHull);
 		

@@ -58,7 +58,7 @@ public class ConvexHull
 		List<Point> secondSetPointsOnConvexHull = bruteForce(secondSmallSet);
 
 		sortPointsClockwiseOrder(firstSetPointsOnConvexHull);
-		sortPointsClockwiseOrder(secondSetPointsOnConvexHull);
+		sortPointsCounterClockwiseOrder(secondSetPointsOnConvexHull);
 		
 		List<Point> pointsOnConvexHull = mergeHulls(firstSetPointsOnConvexHull, secondSetPointsOnConvexHull);
 		
@@ -130,9 +130,9 @@ public class ConvexHull
 		
 		for (Point point : firstConvexHull)
 		{
-			if(point.x() > upperTangent.a().x() && point.x() > lowerTangent.a().x())
+			if(point.x() > upperTangent.a().x() || point.x() > lowerTangent.a().x())
 			{
-				if(point.y() < upperTangent.a().y() && point.y() > lowerTangent.a().y())
+				if(point.y() < upperTangent.a().y() || point.y() > lowerTangent.a().y())
 				{
 					continue;
 				}
@@ -143,7 +143,7 @@ public class ConvexHull
 		
 		for (Point point : secondConvexHull)
 		{
-			if(point.x() < upperTangent.b().x() && point.x() < lowerTangent.b().x())
+			if(point.x() < upperTangent.b().x() || point.x() < lowerTangent.b().x())
 			{
 				if(point.y() < upperTangent.b().y() && point.y() > lowerTangent.b().y())
 				{
@@ -166,11 +166,8 @@ public class ConvexHull
 	 */
 	protected static LineSegment findUpperTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
-		int rightmostPointFirstConvexHullIndex = firstConvexHull.size()-1;
-		int leftmostPointSecondConvexHullIndex = 0;
-		
-		Point rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
-		Point leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+		Point rightmostPointFirstConvexHull = getRightMostPoint(firstConvexHull);
+		Point leftmostPointSecondConvexHull = getLeftMostPoint(secondConvexHull); 
 		
 		LineSegment upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
 
@@ -178,7 +175,14 @@ public class ConvexHull
 		
 		while(!isEveryPointOnTheSameLine)
 		{
-			leftmostPointSecondConvexHullIndex++;
+			int leftmostPointSecondConvexHullIndex = secondConvexHull.indexOf(leftmostPointSecondConvexHull) ;
+			leftmostPointSecondConvexHullIndex = (leftmostPointSecondConvexHullIndex - 1) % secondConvexHull.size();
+			
+			if(leftmostPointSecondConvexHullIndex < 0)
+			{
+				leftmostPointSecondConvexHullIndex+= secondConvexHull.size();
+			}
+			
 			leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
 			
 			upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
@@ -189,8 +193,15 @@ public class ConvexHull
 			{
 				return upperTangent;
 			}
+
+			int rightmostPointFirstConvexHullIndex = firstConvexHull.indexOf(rightmostPointFirstConvexHull);
+			rightmostPointFirstConvexHullIndex = (rightmostPointFirstConvexHullIndex - 1) % firstConvexHull.size();
 			
-			rightmostPointFirstConvexHullIndex--;
+			if(rightmostPointFirstConvexHullIndex < 0)
+			{
+				rightmostPointFirstConvexHullIndex+= firstConvexHull.size();
+			}
+			
 			rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
 			
 			upperTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
@@ -210,11 +221,8 @@ public class ConvexHull
 	 */
 	protected static LineSegment findLowerTangent(List<Point> firstConvexHull, List<Point> secondConvexHull)
 	{
-		int rightmostPointFirstConvexHullIndex = firstConvexHull.size()-1;
-		int leftmostPointSecondConvexHullIndex = 0;
-		
-		Point rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
-		Point leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
+		Point rightmostPointFirstConvexHull = getRightMostPoint(firstConvexHull);
+		Point leftmostPointSecondConvexHull = getLeftMostPoint(secondConvexHull); 
 		
 		LineSegment lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
 
@@ -222,7 +230,8 @@ public class ConvexHull
 		
 		while(!isEveryPointOnTheSameLine)
 		{
-			rightmostPointFirstConvexHullIndex--;
+			int rightmostPointFirstConvexHullIndex = firstConvexHull.indexOf(rightmostPointFirstConvexHull);
+			rightmostPointFirstConvexHullIndex = (rightmostPointFirstConvexHullIndex + 1) % firstConvexHull.size();
 			rightmostPointFirstConvexHull = firstConvexHull.get(rightmostPointFirstConvexHullIndex);
 			
 			lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
@@ -233,8 +242,9 @@ public class ConvexHull
 			{
 				return lowerTangent;
 			}
-			
-			leftmostPointSecondConvexHullIndex++;
+
+			int leftmostPointSecondConvexHullIndex = secondConvexHull.indexOf(leftmostPointSecondConvexHull);
+			leftmostPointSecondConvexHullIndex = (leftmostPointSecondConvexHullIndex + 1) % secondConvexHull.size();
 			leftmostPointSecondConvexHull = secondConvexHull.get(leftmostPointSecondConvexHullIndex); 
 			
 			lowerTangent = new LineSegment(rightmostPointFirstConvexHull, leftmostPointSecondConvexHull);
@@ -244,7 +254,7 @@ public class ConvexHull
 		
 		return lowerTangent;
 	}
-	
+
 	/**
 	 * Given a set of points P and a set of line segments,
 	 * iterate over all line segments to check if it makes an edge of
@@ -401,6 +411,18 @@ public class ConvexHull
 		Point centerPoint = getCenterPoint(points);
 		Collections.sort(points, new PointClockwiseComparator(centerPoint));
 	}
+	
+	/**
+	 * Sort a given set of points in counterclockwise order.
+	 * 
+	 * @param points a given set of points
+	 * @see http://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+	 */
+	protected static void sortPointsCounterClockwiseOrder(List<Point> points)
+	{
+		Point centerPoint = getCenterPoint(points);
+		Collections.sort(points, new PointCounterClockwiseComparator(centerPoint));
+	}
 
 	/**
 	 * Computes the center of a given set of points.
@@ -426,5 +448,57 @@ public class ConvexHull
 		Point center = new Point(sumOfXCoordinates, sumOfYCoordinates);
 		
 		return center;
+	}
+
+	/**
+	 * Return the leftmost point in a list.
+	 * @param points
+	 * @return leftMost the leftMost point
+	 */
+	private static Point getLeftMostPoint(List<Point> points)
+	{
+		Point leftMost = null;
+		
+		for (Point point : points)
+		{
+			if(leftMost == null)
+			{
+				leftMost = point;
+			}
+			
+			if(point.x() < leftMost.x())
+			{
+				leftMost = point;
+			}
+		}
+		
+		return leftMost;
+	}
+
+	
+	
+	/**
+	 * Return the rightMost point of a given list.
+	 * @param points
+	 * @return rightMost the rightmost point of a list
+	 */
+	private static Point getRightMostPoint(List<Point> points)
+	{
+		Point rightMost = null;
+		
+		for (Point point : points)
+		{
+			if(rightMost == null)
+			{
+				rightMost = point;
+			}
+			
+			if(point.x() > rightMost.x())
+			{
+				rightMost = point;
+			}
+		}
+		
+		return rightMost;
 	}
 }
